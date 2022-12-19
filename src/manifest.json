@@ -1,0 +1,13 @@
+{
+	"manifest_version": 1,
+	"id": "dev.kaon.joplin-readwise-plugin",
+	"app_min_version": "2.8",
+	"version": "1.0.0",
+	"name": "Readwise Plugin",
+	"description": "A plugin to import Readwise highlights",
+	"author": "Mario Vormstein",
+	"homepage_url": "https://github.com/mariovor/joplin-readwise-plugin",
+	"repository_url": "https://github.com/mariovor/joplin-readwise-plugin",
+	"keywords": [],
+	"categories": []
+}
