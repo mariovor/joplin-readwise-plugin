@@ -25,3 +25,10 @@ The file that may cause problem is "webpack.config.js" because it's going to be 
 
 # Status
 WIP -> Not usable
+
+# Troubleshooting
+SSL Error with webpack, set environment variable
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+see [Issue](https://github.com/webpack/webpack/issues/14532).
