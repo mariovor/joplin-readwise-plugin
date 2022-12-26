@@ -1,7 +1,7 @@
 import joplin from 'api';
-import {createNotes} from "./interactWithJoplin";
 import {getHighlights} from "./interactWithReadwise";
 import {getToken, registerSettings} from "./joplin/settings";
+import {createNotes} from "./joplin/notes";
 
 
 joplin.plugins.register({
