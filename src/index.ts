@@ -9,8 +9,8 @@ joplin.plugins.register({
     onStart: async function () {
         await registerSettings();
         const token = await getToken()
-        await verifyToken(token)
         if (token) {
+            await verifyToken(token)
             const highlights = getHighlights()
             await createNotes(highlights)
         } else {
