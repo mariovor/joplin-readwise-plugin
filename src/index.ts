@@ -11,7 +11,7 @@ joplin.plugins.register({
         const token = await getToken()
         if (token) {
             await verifyToken(token)
-            const highlights = getHighlights()
+            const highlights = await getHighlights(token)
             await createNotes(highlights)
         } else {
             throw Error('No token set!')
