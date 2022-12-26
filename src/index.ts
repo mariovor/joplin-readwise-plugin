@@ -1,7 +1,11 @@
 import joplin from 'api';
+import {createOrGetPluginFolder} from "./interactWithJoplin";
+
 
 joplin.plugins.register({
-	onStart: async function() {
-		console.info('Hello world. Test plugin started!');
-	},
+
+    onStart: async function () {
+        await createOrGetPluginFolder();
+    },
+
 });
