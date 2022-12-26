@@ -1,4 +1,4 @@
-import {HighlightExportResult} from "../interactWithReadwise";
+import {Article} from "../interactWithReadwise";
 import joplin from "../../api";
 import {createOrGetPluginFolder} from "./folder";
 
@@ -24,7 +24,7 @@ async function getNote(title: string, parent_id: string): Promise<string> {
  * Create notes based on the passed highlights
  * @param highlights
  */
-export async function createNotes(highlights: HighlightExportResult[]) {
+export async function createNotes(highlights: Article[]) {
     const pluginFolderId = await createOrGetPluginFolder();
     for (let highlight of highlights) {
         const body = createNoteBody(highlight)
@@ -39,8 +39,25 @@ export async function createNotes(highlights: HighlightExportResult[]) {
     }
 }
 
-function createNoteBody(highlight: HighlightExportResult) {
-    return `# ${highlight.title}\n
-    Author: ${highlight.author}
-    `
+function createHighlightsBody(article: Article): string {
+    let highlightBody = '';
+    for (let highlight of article.highlights) {
+        highlightBody = highlightBody + `${highlight.text}\n\n`
+    }
+    return highlightBody
+}
+
+function createNoteBody(article: Article) {
+
+    const highlights = createHighlightsBody(article)
+
+
+    return `# ${article.title}
+    
+ Author: ${article.author}
+    
+ Link: [Link](${article.source_url})
+    
+ ${highlights}
+ `
 }
