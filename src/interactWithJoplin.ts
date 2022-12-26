@@ -1,10 +1,11 @@
 import joplin from 'api';
+import {HighlightExportResult} from "./interactWithReadwise";
 
 const PLUGIN_FOLDER_NAME = 'Readwise';
 
 async function getFolderIfExists() {
     let folders = await joplin.data.get(['folders']);
-    return  folders.items.filter((item) => {
+    return folders.items.filter((item) => {
         return item.title == PLUGIN_FOLDER_NAME
     });
 }
@@ -30,4 +31,23 @@ export async function createOrGetPluginFolder(): Promise<string> {
     } else throw Error('Error getting plugin folder')
 
     return folderId
+}
+
+/**
+ * Create notes based on the passed highlights
+ * @param highlights
+ */
+export async function createNotes(highlights: HighlightExportResult[]) {
+    const pluginFolderId = await createOrGetPluginFolder();
+    for (let highlight of highlights) {
+        const body = createNoteBody(highlight)
+        console.log(`Create note "${highlight.title}"`)
+        await joplin.data.post(['notes'], null, {body: body, title: highlight.title, parent_id: pluginFolderId});
+    }
+}
+
+function createNoteBody(highlight: HighlightExportResult) {
+    return `# ${highlight.title}\n
+    Author: ${highlight.author}
+    `
 }

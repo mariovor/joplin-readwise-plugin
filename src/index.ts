@@ -1,11 +1,13 @@
 import joplin from 'api';
-import {createOrGetPluginFolder} from "./interactWithJoplin";
+import {createNotes} from "./interactWithJoplin";
+import {getHighlights} from "./interactWithReadwise";
 
 
 joplin.plugins.register({
 
     onStart: async function () {
-        await createOrGetPluginFolder();
+        const highlights = getHighlights()
+        await createNotes(highlights)
     },
 
 });
