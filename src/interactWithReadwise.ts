@@ -12,6 +12,26 @@ export interface HighlightExportResponse {
 }
 
 /**
+ * Verify the passed token with Readwise
+ * @param token
+ */
+export async function verifyToken(token: string) {
+    const result = await fetch(
+        'https://readwise.io/api/v2/auth/',
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Token ${token}`
+            }
+        }
+    )
+    if (!result.ok) {
+        throw Error('Invalid token')
+    }
+}
+
+
+/**
  * Get Highlights from Readwise
  */
 export function getHighlights(): HighlightExportResult[] {
