@@ -2,10 +2,19 @@ import {Article} from "../interactWithReadwise";
 import joplin from "../../api";
 import {createOrGetPluginFolder} from "./folder";
 
+/**
+ * Remove some special characters which makes problems while searching
+ * @param title
+ */
+export function cleanTitle(title: string): string {
+    return title.replace(/\./g, ' ').replace(/"/g, ' ').replace(/%/g, ' ')
+}
+
 async function getNote(title: string, parent_id: string): Promise<string> {
     let noteId = null
+    const cleanedTitle = cleanTitle(title)
     const {_, items} = await joplin.data.get(['search'], {
-        query: title,
+        query: cleanedTitle,
         fields: 'id, parent_id'
     })
     if (items.length > 1) {
