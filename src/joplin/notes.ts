@@ -1,32 +1,19 @@
 import {Article} from "../interactWithReadwise";
 import joplin from "../../api";
 import {createOrGetPluginFolder} from "./folder";
+import {getCreatedNotesMap, setCreatedNotesMap} from "./settings";
 
 /**
  * Remove some special characters which makes problems while searching
  * @param title
  */
 export function cleanTitle(title: string): string {
-    return title.replace(/\./g, ' ').replace(/"/g, ' ').replace(/%/g, ' ')
+    return title.replace(/[^a-zA-Z ]/g, ' ')
 }
 
-async function getNote(title: string, parent_id: string): Promise<string> {
-    let noteId = null
-    const cleanedTitle = cleanTitle(title)
-    const {_, items} = await joplin.data.get(['search'], {
-        query: cleanedTitle,
-        fields: 'id, parent_id'
-    })
-    if (items.length > 1) {
-        throw Error(`Found more than one entry for title "${title}"`)
-    } else if (items.length == 1) {
-        const item = items[0];
-        if (item.parentId != parent_id) {
-            throw Error(`Found one note with title ${title}, but it is in wrong folder.`)
-        }
-        noteId = item.id
-    }
-    return noteId
+async function getNoteId(title: string, parent_id: string): Promise<string> {
+    let store = await getCreatedNotesMap();
+    return store.get(title)
 }
 
 /**
@@ -37,13 +24,15 @@ export async function createNotes(highlights: Article[]) {
     const pluginFolderId = await createOrGetPluginFolder();
     for (let highlight of highlights) {
         const body = createNoteBody(highlight)
-        const noteId = await getNote(highlight.title, pluginFolderId)
+        const noteId = await getNoteId(highlight.title, pluginFolderId)
         if (noteId) {
             console.log(`Update note ${noteId}  with title "${highlight.title}"`)
             await joplin.data.put(['notes', noteId], null, {body: body});
         } else {
             console.log(`Create note with title "${highlight.title}"`)
             await joplin.data.post(['notes'], null, {body: body, title: highlight.title, parent_id: pluginFolderId});
+            const store = await getCreatedNotesMap()
+            await setCreatedNotesMap(store.set(highlight.title, noteId))
         }
     }
 }
