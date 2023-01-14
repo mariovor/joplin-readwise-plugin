@@ -1,4 +1,4 @@
-import {Article} from "../interactWithReadwise";
+import {ReadwiseItem} from "../interactWithReadwise";
 import joplin from "../../api";
 import {createOrGetPluginFolder} from "./folder";
 import {getCreatedNotesMap, setCreatedNotesMap} from "./settings";
@@ -11,33 +11,33 @@ export function cleanTitle(title: string): string {
     return title.replace(/[^a-zA-Z ]/g, ' ')
 }
 
-async function getNoteId(title: string, parent_id: string): Promise<string> {
+async function getNoteId(id: number): Promise<string> {
     let store = await getCreatedNotesMap();
-    return store.get(title)
+    return store.get(String(id))
 }
 
 /**
- * Create notes based on the passed highlights
- * @param highlights
+ * Create notes based on the passed readwiseItems
+ * @param readwiseItems
  */
-export async function createNotes(highlights: Article[]) {
+export async function createNotes(readwiseItems: ReadwiseItem[]) {
     const pluginFolderId = await createOrGetPluginFolder();
-    for (let highlight of highlights) {
-        const body = createNoteBody(highlight)
-        const noteId = await getNoteId(highlight.title, pluginFolderId)
+    for (let readwiseItem of readwiseItems) {
+        const body = createNoteBody(readwiseItem)
+        const noteId = await getNoteId(readwiseItem.user_book_id)
         if (noteId) {
-            console.log(`Update note ${noteId}  with title "${highlight.title}"`)
+            console.log(`Update note ${noteId}  with title "${readwiseItem.title}"`)
             await joplin.data.put(['notes', noteId], null, {body: body});
         } else {
-            console.log(`Create note with title "${highlight.title}"`)
-            const newNote = await joplin.data.post(['notes'], null, {body: body, title: highlight.title, parent_id: pluginFolderId});
+            console.log(`Create note with title "${readwiseItem.title}"`)
+            const newNote = await joplin.data.post(['notes'], null, {body: body, title: readwiseItem.title, parent_id: pluginFolderId});
             const store = await getCreatedNotesMap()
-            await setCreatedNotesMap(store.set(highlight.title, newNote.id))
+            await setCreatedNotesMap(store.set(String(readwiseItem.user_book_id), newNote.id))
         }
     }
 }
 
-function createHighlightsBody(article: Article): string {
+function createHighlightsBody(article: ReadwiseItem): string {
     let highlightBody = '';
     for (let highlight of article.highlights) {
         highlightBody = highlightBody + `${highlight.text}\n\n`
@@ -45,7 +45,7 @@ function createHighlightsBody(article: Article): string {
     return highlightBody
 }
 
-function createNoteBody(article: Article) {
+function createNoteBody(article: ReadwiseItem) {
 
     const highlights = createHighlightsBody(article)
 

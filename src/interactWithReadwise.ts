@@ -2,7 +2,7 @@ interface Highlight {
     text: string
 }
 
-export interface Article {
+export interface ReadwiseItem {
     user_book_id: number,
     title: string,
     author: string,
@@ -13,7 +13,7 @@ export interface Article {
 export interface HighlightExportResponse {
     count: number,
     nextPageCursor: string,
-    results: [Article]
+    results: [ReadwiseItem]
 }
 
 /**
@@ -70,8 +70,8 @@ const fetchFromExportApi = async (token, updatedAfter = null) => {
 };
 
 /**
- * Get Highlights from Readwise
+ * Get an ReadwiseItem from Readwise.
  */
-export async function getHighlights(token: string): Promise<Article[]> {
-    return await fetchFromExportApi(token) as Article[]
+export async function getReadwiseItem(token: string): Promise<ReadwiseItem[]> {
+    return await fetchFromExportApi(token) as ReadwiseItem[]
 }
