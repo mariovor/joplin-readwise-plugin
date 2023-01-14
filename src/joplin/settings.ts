@@ -6,6 +6,8 @@ const PLUGIN_SETTINGS_TOKEN_NAME = 'readwise-token'
 const PLUGIN_SETTINGS_LAST_UPDATE_NAME = 'readwise-last-update'
 const PLUGIN_SETTINGS_CREATED_NOTES_NAME = 'readwise-created-notes'
 
+const DEFAULT_LAST_UPDATE_TIME = new Date(1970, 1, 1).toISOString();
+
 export async function registerSettings() {
     await joplin.settings.registerSection(PLUGIN_SETTINGS_SECTION_NAME, {
         label: 'Readwise-Sync',
@@ -19,10 +21,10 @@ export async function registerSettings() {
         label: 'Authentication Token',
     }
     settings[PLUGIN_SETTINGS_LAST_UPDATE_NAME] = {
-        value: new Date(1970, 1, 1).toISOString(),
+        value: DEFAULT_LAST_UPDATE_TIME,
         type: SettingItemType.String,
         section: PLUGIN_SETTINGS_SECTION_NAME,
-        public: false,
+        public: true,
         label: 'Last Update Time (do not modify manually)',
     }
     settings[PLUGIN_SETTINGS_CREATED_NOTES_NAME] = {
@@ -50,13 +52,26 @@ export async function getCreatedNotesMap(): Promise<Map<string, string>> {
 
 }
 
-export async function setCreatedNotesMap(map: Map<string, string>) {
+export function convertMapToJSONString(map: Map<string, string>) {
     let jsonObject = {}
-    for (let [key, value] of map){
+    for (let [key, value] of map) {
         jsonObject[key] = value
     }
     const jsonString = JSON.stringify(jsonObject)
     console.log('Saving...')
     console.log(jsonString)
+    return jsonString;
+}
+
+export async function setCreatedNotesMap(map: Map<string, string>) {
+    const jsonString = convertMapToJSONString(map);
     await joplin.settings.setValue(PLUGIN_SETTINGS_CREATED_NOTES_NAME, jsonString)
+}
+
+export async function clearNotesMap() {
+    await joplin.settings.setValue(PLUGIN_SETTINGS_CREATED_NOTES_NAME, '{}')
+}
+
+export async function clearLastUpdateTime() {
+    await joplin.settings.setValue(PLUGIN_SETTINGS_LAST_UPDATE_NAME, DEFAULT_LAST_UPDATE_TIME)
 }
