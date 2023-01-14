@@ -75,3 +75,11 @@ export async function clearNotesMap() {
 export async function clearLastUpdateTime() {
     await joplin.settings.setValue(PLUGIN_SETTINGS_LAST_UPDATE_NAME, DEFAULT_LAST_UPDATE_TIME)
 }
+
+export async function setLastUpdateTimeToNow(){
+    await joplin.settings.setValue(PLUGIN_SETTINGS_LAST_UPDATE_NAME, new Date().toISOString())
+}
+
+export async function getLastUpdateTime(): Promise<String> {
+    return  await joplin.settings.value(PLUGIN_SETTINGS_LAST_UPDATE_NAME)
+}

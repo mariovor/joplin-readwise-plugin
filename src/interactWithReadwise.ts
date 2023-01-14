@@ -1,3 +1,5 @@
+import {getLastUpdateTime} from "./joplin/settings";
+
 interface Highlight {
     text: string
 }
@@ -73,5 +75,8 @@ const fetchFromExportApi = async (token, updatedAfter = null) => {
  * Get an ReadwiseItem from Readwise.
  */
 export async function getReadwiseItem(token: string): Promise<ReadwiseItem[]> {
-    return await fetchFromExportApi(token) as ReadwiseItem[]
+    const lastUpdateTime = await getLastUpdateTime();
+    console.log('Will update all changes after')
+    console.log(lastUpdateTime)
+    return await fetchFromExportApi(token, lastUpdateTime) as ReadwiseItem[]
 }
