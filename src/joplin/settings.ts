@@ -44,8 +44,6 @@ export async function getToken() {
 
 export async function getCreatedNotesMap(): Promise<Map<string, string>> {
     const jsonString = await joplin.settings.value(PLUGIN_SETTINGS_CREATED_NOTES_NAME)
-    console.log('Reading')
-    console.log(jsonString)
     const json = JSON.parse(jsonString)
     return new Map(Object.entries(json))
 
@@ -58,8 +56,6 @@ export function convertMapToJSONString(map: Map<string, string>) {
         jsonObject[key] = value
     }
     const jsonString = JSON.stringify(jsonObject)
-    console.log('Saving...')
-    console.log(jsonString)
     return jsonString;
 }
 
