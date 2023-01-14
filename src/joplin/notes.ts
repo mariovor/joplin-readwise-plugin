@@ -1,27 +1,23 @@
 import {ReadwiseItem} from "../interactWithReadwise";
 import joplin from "../../api";
-import {createOrGetPluginFolder} from "./folder";
+import {resetPluginAndCreateFolderOrGetPluginFolder} from "./folder";
 import {getCreatedNotesMap, setCreatedNotesMap} from "./settings";
 
 /**
- * Remove some special characters which makes problems while searching
- * @param title
+ * Get the note id for a given readwiseId.
+ * @param readwise_id The id of a readwise item
  */
-export function cleanTitle(title: string): string {
-    return title.replace(/[^a-zA-Z ]/g, ' ')
-}
-
-async function getNoteId(id: number): Promise<string> {
+async function getNoteId(readwise_id: number): Promise<string> {
     let store = await getCreatedNotesMap();
-    return store.get(String(id))
+    return store.get(String(readwise_id))
 }
 
 /**
- * Create notes based on the passed readwiseItems
+ * Create notes based on the passed readwiseItems.
  * @param readwiseItems
  */
 export async function createNotes(readwiseItems: ReadwiseItem[]) {
-    const pluginFolderId = await createOrGetPluginFolder();
+    const pluginFolderId = await resetPluginAndCreateFolderOrGetPluginFolder();
     for (let readwiseItem of readwiseItems) {
         const body = createNoteBody(readwiseItem)
         const noteId = await getNoteId(readwiseItem.user_book_id)
@@ -37,24 +33,32 @@ export async function createNotes(readwiseItems: ReadwiseItem[]) {
     }
 }
 
-function createHighlightsBody(article: ReadwiseItem): string {
+/**
+ * Create the body for a note with the content of the given readwise highlights.
+ * @param readwiseItem One readwiseItem containing highlights
+ */
+function createHighlightsBody(readwiseItem: ReadwiseItem): string {
     let highlightBody = '';
-    for (let highlight of article.highlights) {
+    for (let highlight of readwiseItem.highlights) {
         highlightBody = highlightBody + `${highlight.text}\n\n`
     }
     return highlightBody
 }
 
-function createNoteBody(article: ReadwiseItem) {
+/**
+ * Create the body of a Joplin note. Will contain metadata of the readwise item and the highlights.
+ * @param readwiseItem
+ */
+function createNoteBody(readwiseItem: ReadwiseItem) {
 
-    const highlights = createHighlightsBody(article)
+    const highlights = createHighlightsBody(readwiseItem)
 
 
-    return `# ${article.title}
+    return `# ${readwiseItem.title}
     
- Author: ${article.author}
+ Author: ${readwiseItem.author}
     
- Link: [Link](${article.source_url})
+ Link: [Link](${readwiseItem.source_url})
     
  ${highlights}
  `
