@@ -30,9 +30,9 @@ export async function createNotes(highlights: Article[]) {
             await joplin.data.put(['notes', noteId], null, {body: body});
         } else {
             console.log(`Create note with title "${highlight.title}"`)
-            await joplin.data.post(['notes'], null, {body: body, title: highlight.title, parent_id: pluginFolderId});
+            const newNote = await joplin.data.post(['notes'], null, {body: body, title: highlight.title, parent_id: pluginFolderId});
             const store = await getCreatedNotesMap()
-            await setCreatedNotesMap(store.set(highlight.title, noteId))
+            await setCreatedNotesMap(store.set(highlight.title, newNote.id))
         }
     }
 }
