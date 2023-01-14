@@ -24,7 +24,18 @@ In general this command tries to do the right thing - in particular it's going t
 The file that may cause problem is "webpack.config.js" because it's going to be overwritten. For that reason, if you want to change it, consider creating a separate JavaScript file and include it in webpack.config.js. That way, when you update, you only have to restore the line that include your file.
 
 # Status
-WIP -> Not usable
+WIP -> ALPHA
+
+# Limitation, read before using
+* The plugin will sync your highlights to a folder called `Readwise`. If you already have such a folder, consider renaming it. 
+* The plugin will only sync on startup of Joplin.
+
+# Usage
+
+1. Create / Retrieve your API token from Readwise [here](https://readwise.io/access_token) and keep it ready.
+2. Install the plugin jpl in Joplin. If you build it yourself by running `np, run dist`, you find the file in the `publish` folder. 
+3. Open the settings window of the Plugin called `Readwise-Sync` and enter your token in the dedicated field.
+4. Restart the application, your highlights should no sync to a folder called Readwise.
 
 # Troubleshooting
 SSL Error with webpack, set environment variable
